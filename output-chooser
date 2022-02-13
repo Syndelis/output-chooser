@@ -6,6 +6,7 @@
 
 integer SELECTED=1
 OPTIONS=()
+OPTIONS_SANE=()
 get_options() {
 
     SELECTED+=$(pacmd list-sinks | grep -Po '(?<=\* index:\s)\d+')
@@ -18,6 +19,11 @@ get_options() {
         OPTIONS+=( "$line" )
     done
 
+    pacmd list-sinks | grep -Po '(?<=device\.description =\s").*(?=")' | while read line
+    do
+        OPTIONS_SANE+=( "$line" )
+    done
+
 }
 
 # ------------------------------------------------------------------------------
@@ -27,6 +33,6 @@ get_options() {
 get_options
 
 USER_SELECTED=$(
-    yad --mouse --height 120 --text "Choose Audio Sink" --entry "${OPTIONS[@]}" --entry-text "${OPTIONS[SELECTED]}"
+    yad --mouse --height 120 --num-output --text "Choose Audio Sink" --entry "${OPTIONS_SANE[@]}" --entry-text "${OPTIONS_SANE[SELECTED]}"
 )
-! [ -z "$USER_SELECTED" ] && pactl set-default-sink "$USER_SELECTED"
+! [ -z "$USER_SELECTED" ] && pactl set-default-sink "${OPTIONS[USER_SELECTED]}"
