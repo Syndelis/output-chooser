@@ -1,0 +1,30 @@
+#!/bin/zsh
+
+# ------------------------------------------------------------------------------
+# FUNCTIONS
+# ------------------------------------------------------------------------------
+
+integer SELECTED=1
+OPTIONS=()
+get_options() {
+
+    SELECTED+=$(pacmd list-sinks | grep -Po '(?<=\* index:\s)\d+')
+
+    # Elements appended to array lost after funciton is done in Bash, hence why
+    # this requires Zsh
+
+    pacmd list-sinks | grep -Po '(?<=name:\s<).*(?=>)' | while read line
+    do
+        OPTIONS+=( "$line" )
+    done
+
+}
+
+# ------------------------------------------------------------------------------
+# MAIN CODE
+# ------------------------------------------------------------------------------
+
+get_options
+
+USER_SELECTED=$(yad --mouse --entry "${OPTIONS[@]}" --entry-text "${OPTIONS[SELECTED]}")
+! [ -z "$USER_SELECTED" ] && pactl set-default-sink "$USER_SELECTED"
