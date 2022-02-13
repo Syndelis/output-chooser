@@ -26,5 +26,7 @@ get_options() {
 
 get_options
 
-USER_SELECTED=$(yad --mouse --entry "${OPTIONS[@]}" --entry-text "${OPTIONS[SELECTED]}")
+USER_SELECTED=$(
+    yad --mouse --height 120 --text "Choose Audio Sink" --entry "${OPTIONS[@]}" --entry-text "${OPTIONS[SELECTED]}"
+)
 ! [ -z "$USER_SELECTED" ] && pactl set-default-sink "$USER_SELECTED"
